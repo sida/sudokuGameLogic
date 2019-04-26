@@ -1,0 +1,15 @@
+{
+  "name": "sudoku logic",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^11.12.0",
+    "typescript": "^3.3.4000"
+  }
+}
