@@ -8,6 +8,11 @@ export interface Position2D{
   y:number;
 }
 
+export interface AreaPosition{
+  area:number;
+  pos:number;
+}
+
 export enum Direction {
   none=0,up,down,left,right
 }

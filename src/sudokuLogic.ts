@@ -3,76 +3,157 @@ import * as util from "./util";
 
 export class SudokuLogic {
 
-  private board!: number[][]; // [Area][Position] value 0:empty 1-9
+  private board!: number[][];
 
-  constructor() {
+  constructor(sudokuData: number[][]) {
+    this.board = sudokuData;
   }
 
-
-  checkRow(row:number) {
-    if (row < 0 || row > 8) {
-      return {};
+  createDuplicateList(): Define.Position2D[] {
+    let dupListList: Define.Position2D[][] = [];
+    for (let ix = 0; ix < 9; ix++) {
+      dupListList.push(this.createDuplicateListRow(ix));
     }
-
-    const list = this.getRow(row);
-    if (list.length != 9) {
-      throw new Error("データ不整合 row:" + row);
+    for (let iy = 0; iy < 9; iy++) {
+      dupListList.push(this.createDuplicateListCol(iy));
     }
-    // todo 途中
+    for (let ia = 0; ia < 9; ia++) {
+      dupListList.push(this.createDuplicateListArea(ia));
+    }
+    return util.support.createUniqPosList(dupListList);
   }
 
-
-  private getRow(row: number): number[] {
+  createDuplicateListRow(row: number): Define.Position2D[] {
     if (row < 0 || row > 8) {
       return [];
     }
-    let ret: number[] = [];
-    const area1 = Math.floor(row / 3);
-    const pos1 = row % 3;
-    for (let ii = 0; ii < 3; ii++) {
-      for (let jj = 0; jj < 3; jj++) {
-        const area = area1 + ii;
-        const pos = pos1 + jj;
-        const p = this.getBoardData(area, pos);
-        ret.push(p);
-      }
+    const rowlist = this.getRow(row);
+    if (rowlist.length != 9) {
+      throw new Error("データ不整合 row:" + row);
     }
-    return ret;
+    const dupList = this.checkDuplication(rowlist);
+    console.log(dupList);
+
+    let pos2DList: Define.Position2D[] = [];
+    dupList.forEach((rowDupList, num) => {
+      if (rowDupList && rowDupList.length > 1) {
+        rowDupList.forEach(col => {
+          pos2DList.push({ x: col, y: row });
+        });
+      }
+    });
+    return pos2DList;
   }
 
-  private getCol(col: number): number[] {
+  private createDuplicateListCol(col: number): Define.Position2D[] {
     if (col < 0 || col > 8) {
       return [];
     }
-    let ret: number[] = [];
-    const area1 = col % 3;
-    const pos1 = Math.floor(col / 3);
-    for (let ii = 0; ii < 3; ii++) {
-      for (let jj = 0; jj < 3; jj++) {
-        const area = area1 + ii * 3;
-        const pos = pos1 + jj * 3;
-        const p = this.getBoardData(area, pos);
-        ret.push(p);
+    const collist = this.getCol(col);
+    if (collist.length != 9) {
+      throw new Error("データ不整合 col:" + col);
+    }
+    const dupList = this.checkDuplication(collist);
+
+    let pos2DList: Define.Position2D[] = [];
+    dupList.forEach((colDupList, num) => {
+      if (colDupList && colDupList.length > 1) {
+        colDupList.forEach(row => {
+          pos2DList.push({ x: row, y: col });
+        });
       }
+    });
+    return pos2DList;
+  }
+
+  private createDuplicateListArea(area: number): Define.Position2D[] {
+    if (area < 0 || area > 8) {
+      return [];
+    }
+    const arealist = this.getArea(area);
+    if (arealist.length != 9) {
+      throw new Error("データ不整合 area:" + area);
+    }
+    const dupList = this.checkDuplication(arealist);
+
+    let pos2DList: Define.AreaPosition[] = [];
+    dupList.forEach((areaPosDupList, num) => {
+      if (areaPosDupList) {
+        areaPosDupList.forEach(pos => {
+          pos2DList.push({ area: area, pos: pos });
+        });
+      }
+    });
+    if (!pos2DList) {
+      return [];
+    }
+    return pos2DList.map(pos2D => { return util.support.Area2Pos(pos2D); })
+  }
+
+  private checkDuplication(list: number[]): number[][] {
+    let count: number[][] = [];
+    list.forEach((num, index) => {
+      if (!count[num]) {
+        count[num] = [];
+      }
+      if (num) {
+        // 0（空）以外
+        count[num].push(index);
+      }
+    });
+    return count;
+  }
+
+  private getCol(col: number): number[] {
+    let ret: number[] = [];
+    for (let iy = 0; iy < 9; iy++) {
+      const pos: Define.Position2D = { x: col, y: iy };
+      ret.push(this.getBoardDataFromPosition(pos));
     }
     return ret;
   }
 
-  private getArea(area:number) :number[]  {
+  private getRow(row: number): number[] {
+    let ret: number[] = [];
+    for (let ix = 0; ix < 9; ix++) {
+      const pos: Define.Position2D = { x: ix, y: row };
+      ret.push(this.getBoardDataFromPosition(pos));
+    }
+    console.log(ret);
+    return ret;
+  }
+
+  private getArea(area: number): number[] {
     if (area < 0 || area > 8) {
       return [];
     }
-    return this.board[area];
+    let ret: number[] = [];
+    for (let pos = 0; pos < 9; pos++) {
+      const ap: Define.AreaPosition = { area: area, pos: pos };
+      ret.push(this.getBoardDataFromAreaPositon(ap));
+    }
+    return ret;
   }
 
-  private getBoardData(area: number, pos: number): number {
-    if (area < 0 || area > 8) {
-      return -1;
+  private getBoardDataFromAreaPositon(ap: Define.AreaPosition): number {
+    if (ap.area < 0 || ap.area > 8) {
+      throw new Error("intput error area:" + ap.area);
     }
-    if (pos < 0 || pos > 8) {
-      return -1;
+    if (ap.pos < 0 || ap.pos > 8) {
+      throw new Error("intput error area.pos:" + ap.pos);
     }
-    return this.board[area][pos];
+    let pos2d = util.support.Area2Pos(ap);
+    return this.getBoardDataFromPosition(pos2d);
+  }
+
+  getBoardDataFromPosition(pos: Define.Position2D): number {
+    if (pos.x < 0 || pos.x > 8) {
+      throw new Error("intput error x:" + pos.x);
+    }
+    if (pos.y < 0 || pos.y > 8) {
+      throw new Error("intput error y:" + pos.y);
+    }
+    return this.board[pos.y][pos.x];
   }
 
 }
