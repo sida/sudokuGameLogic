@@ -195,9 +195,9 @@ export class SudokuLogic {
   }
 
   private isAllSettingBoardData(): boolean {
-    for(let ix=0;ix<9;ix++) {
-      for(let iy=0;iy<9;iy++) {
-        if (this.getBoardDataFromPosition({x:ix,y:iy})===0) {
+    for (let ix = 0; ix < 9; ix++) {
+      for (let iy = 0; iy < 9; iy++) {
+        if (this.getBoardDataFromPosition({ x: ix, y: iy }) === 0) {
           return false;
         }
       }

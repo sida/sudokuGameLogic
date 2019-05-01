@@ -37,8 +37,8 @@ ci.on('line', function (line) {
   const y = parseInt(inLine[1], 10);
   const num = parseInt(inLine[2], 10);
 
-  const inputPos = {x:x,y:y};
-  if (!logic.setBoardData(num,inputPos)) {
+  const inputPos = { x: x, y: y };
+  if (!logic.setBoardData(num, inputPos)) {
     console.log("入力できませんでした");
   }
   viewAll();
@@ -50,9 +50,9 @@ ci.on('close', function () {
 
 // helper
 function viewAll() {
-  var red     = '\u001b[31m';
-  var reset   = '\u001b[0m';
-  let vDisp : string[][] = [];
+  var red = '\u001b[31m';
+  var reset = '\u001b[0m';
+  let vDisp: string[][] = [];
 
   // copy
   for (let iy = 0; iy < 9; iy++) {
@@ -77,7 +77,7 @@ function viewAll() {
   console.log("input : x,y,num");
 }
 
-function view(vDisp : string[][]) {
+function view(vDisp: string[][]) {
   for (let iy = 0; iy < 9; iy++) {
     let line = "";
     for (let ix = 0; ix < 9; ix++) {

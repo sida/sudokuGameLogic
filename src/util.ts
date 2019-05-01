@@ -23,7 +23,7 @@ export namespace support {
     return Array.from(buff.values());
   }
 
-  export function deepCopy<T>(obj:T):T{
+  export function deepCopy<T>(obj: T): T {
     return JSON.parse(JSON.stringify(obj));
   }
 }
