@@ -157,6 +157,12 @@ export class SudokuLogic {
   }
 
   isAbleSetData(pos: Define.Position2D): boolean {
+    if (pos.x < 0 || pos.x > 8) {
+      return false;
+    }
+    if (pos.y < 0 || pos.y > 8) {
+      return false;
+    }
     return this.originBoard[pos.y][pos.x] === 0;
   }
 

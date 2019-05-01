@@ -27,10 +27,21 @@ console.log('hello sudoku !!');
 viewAll();
 
 ci.on('line', function (line) {
+  const inLine = line.split(",");
+  if (inLine.length != 3) {
+    console.log("パラメータが足りません");
+    viewAll();
+    return;
+  }
+  const x = parseInt(inLine[0], 10);
+  const y = parseInt(inLine[1], 10);
+  const num = parseInt(inLine[2], 10);
 
+  const inputPos = {x:x,y:y};
+  if (!logic.setBoardData(num,inputPos)) {
+    console.log("入力できませんでした");
+  }
   viewAll();
-  const c = logic.createDuplicateList();
-  console.log(c);
 });
 
 ci.on('close', function () {
@@ -63,6 +74,7 @@ function viewAll() {
   });
   // 表示
   view(vDisp);
+  console.log("input : x,y,num");
 }
 
 function view(vDisp : string[][]) {
