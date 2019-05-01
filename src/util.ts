@@ -11,28 +11,22 @@ export namespace support {
     return pos1.x === pos2.x && pos1.y === pos2.y;
   }
 
-  // export function Pos2Area(pos2d:Position2D):AreaPosition {
-  //   // area
-  //   const area = Math.floor(pos2d.y / 3) * 3 + Math.floor(pos2d.x / 3);
-  //   // pos
-  //   const pos = (pos2d.y % 3) * 3 + pos2d.x % 3;
-  //   return {area:area,pos:pos};
-  // }
-
-  export function Area2Pos(area:AreaPosition):Position2D {
+  export function Area2Pos(area: AreaPosition): Position2D {
     const x = ((area.area % 3) * 3) + (area.pos % 3);
     const y = Math.floor(area.area / 3) * 3 + Math.floor(area.pos / 3);
-    return {x:x,y:y};
+    return { x: x, y: y };
   }
 
-  export function createUniqPosList(listList : Position2D[][]):Position2D[] {
-    let buff = new Map<number,Position2D>();
-    listList.forEach(list => {
-      list.forEach(pos2D => {
-        let key = pos2D.x + pos2D.y * 10;
-        buff.set(key,pos2D);
-      });
+  export function createUniqPosList(list: Position2D[]): Position2D[] {
+    let buff = new Map<number, Position2D>();
+    list.forEach(pos2D => {
+      let key = pos2D.x + pos2D.y * 10;
+      buff.set(key, pos2D);
     });
     return Array.from(buff.values());
+  }
+
+  export function deepCopy<T>(obj:T):T{
+    return JSON.parse(JSON.stringify(obj));
   }
 }

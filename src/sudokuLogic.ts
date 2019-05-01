@@ -4,26 +4,28 @@ import * as util from "./util";
 export class SudokuLogic {
 
   private board!: number[][];
+  private originBoard!: number[][];
 
   constructor(sudokuData: number[][]) {
     this.board = sudokuData;
+    this.originBoard = util.support.deepCopy(sudokuData);
   }
 
   createDuplicateList(): Define.Position2D[] {
-    let dupListList: Define.Position2D[][] = [];
+    let dupListList: Define.Position2D[] = [];
     for (let ix = 0; ix < 9; ix++) {
-      dupListList.push(this.createDuplicateListRow(ix));
+      dupListList = dupListList.concat(this.createDuplicateListRow(ix));
     }
     for (let iy = 0; iy < 9; iy++) {
-      dupListList.push(this.createDuplicateListCol(iy));
+      dupListList = dupListList.concat(this.createDuplicateListCol(iy));
     }
     for (let ia = 0; ia < 9; ia++) {
-      dupListList.push(this.createDuplicateListArea(ia));
+      dupListList = dupListList.concat(this.createDuplicateListArea(ia));
     }
     return util.support.createUniqPosList(dupListList);
   }
 
-  createDuplicateListRow(row: number): Define.Position2D[] {
+  private createDuplicateListRow(row: number): Define.Position2D[] {
     if (row < 0 || row > 8) {
       return [];
     }
@@ -32,7 +34,6 @@ export class SudokuLogic {
       throw new Error("データ不整合 row:" + row);
     }
     const dupList = this.checkDuplication(rowlist);
-    console.log(dupList);
 
     let pos2DList: Define.Position2D[] = [];
     dupList.forEach((rowDupList, num) => {
@@ -59,7 +60,7 @@ export class SudokuLogic {
     dupList.forEach((colDupList, num) => {
       if (colDupList && colDupList.length > 1) {
         colDupList.forEach(row => {
-          pos2DList.push({ x: row, y: col });
+          pos2DList.push({ x: col, y: row });
         });
       }
     });
@@ -78,7 +79,7 @@ export class SudokuLogic {
 
     let pos2DList: Define.AreaPosition[] = [];
     dupList.forEach((areaPosDupList, num) => {
-      if (areaPosDupList) {
+      if (areaPosDupList && areaPosDupList.length > 1) {
         areaPosDupList.forEach(pos => {
           pos2DList.push({ area: area, pos: pos });
         });
@@ -119,7 +120,6 @@ export class SudokuLogic {
       const pos: Define.Position2D = { x: ix, y: row };
       ret.push(this.getBoardDataFromPosition(pos));
     }
-    console.log(ret);
     return ret;
   }
 
@@ -156,4 +156,46 @@ export class SudokuLogic {
     return this.board[pos.y][pos.x];
   }
 
+  isAbleSetData(pos: Define.Position2D): boolean {
+    return this.originBoard[pos.y][pos.x] === 0;
+  }
+
+  setBoardData(num: number, pos: Define.Position2D): boolean {
+    if (!this.isAbleSetData(pos)) {
+      return false;
+    }
+    if (pos.x < 0 || pos.x > 8) {
+      return false;
+    }
+    if (pos.y < 0 || pos.y > 8) {
+      return false;
+    }
+    if (num < 0 || num > 8) {
+      return false;
+    }
+    this.board[pos.y][pos.x] = num;
+    return true;
+  }
+
+  isSolved(): boolean {
+    if (!this.isAllSettingBoardData()) {
+      return false;
+    }
+    const dupList = this.createDuplicateList();
+    if (dupList.length > 0) {
+      return false;
+    }
+    return true;
+  }
+
+  private isAllSettingBoardData(): boolean {
+    for(let ix=0;ix<9;ix++) {
+      for(let iy=0;iy<9;iy++) {
+        if (this.getBoardDataFromPosition({x:ix,y:iy})===0) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
 }
