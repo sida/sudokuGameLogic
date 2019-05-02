@@ -1,7 +1,5 @@
 import { Position2D, AreaPosition } from "./Define";
 
-let dirList: Position2D[] = [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }, { x: -1, y: 0 }, { x: 1, y: 0 }];
-
 export namespace support {
 
   export function equalPos(pos1: Position2D, pos2: Position2D): boolean {
