@@ -3,7 +3,22 @@ import * as util from "./util";
 
 export class SudokuLogic {
 
+  /**
+   * 数独の進行状況（9x9の配列でそのまま数独の表を表す）
+   *
+   * @private
+   * @type {number[][]}
+   * @memberof SudokuLogic
+   */
   private board!: number[][];
+
+  /**
+   * 数独の初期状態（書き換え不能位置を算出する）
+   *
+   * @private
+   * @type {number[][]}
+   * @memberof SudokuLogic
+   */
   private originBoard!: number[][];
 
   constructor(sudokuData: number[][]) {
@@ -11,6 +26,12 @@ export class SudokuLogic {
     this.originBoard = util.support.deepCopy(sudokuData);
   }
 
+  /**
+   * 値が重複した座標一覧を作成
+   *
+   * @returns {Define.Position2D[]}
+   * @memberof SudokuLogic
+   */
   createDuplicateList(): Define.Position2D[] {
     let dupListList: Define.Position2D[] = [];
     for (let ix = 0; ix < 9; ix++) {
@@ -105,6 +126,14 @@ export class SudokuLogic {
     return count;
   }
 
+  /**
+   * 指定列を取得
+   *
+   * @private
+   * @param {number} col
+   * @returns {number[]}
+   * @memberof SudokuLogic
+   */
   private getCol(col: number): number[] {
     let ret: number[] = [];
     for (let iy = 0; iy < 9; iy++) {
@@ -114,6 +143,14 @@ export class SudokuLogic {
     return ret;
   }
 
+  /**
+   * 指定行を取得
+   *
+   * @private
+   * @param {number} row
+   * @returns {number[]}
+   * @memberof SudokuLogic
+   */
   private getRow(row: number): number[] {
     let ret: number[] = [];
     for (let ix = 0; ix < 9; ix++) {
@@ -123,6 +160,14 @@ export class SudokuLogic {
     return ret;
   }
 
+  /**
+   * 指定エリア（9x9に分割した位置）の取得
+   *
+   * @private
+   * @param {number} area
+   * @returns {number[]}
+   * @memberof SudokuLogic
+   */
   private getArea(area: number): number[] {
     if (area < 0 || area > 8) {
       return [];
@@ -146,6 +191,13 @@ export class SudokuLogic {
     return this.getBoardDataFromPosition(pos2d);
   }
 
+  /**
+   * 指定位置の値を取得
+   *
+   * @param {Define.Position2D} pos
+   * @returns {number}
+   * @memberof SudokuLogic
+   */
   getBoardDataFromPosition(pos: Define.Position2D): number {
     if (pos.x < 0 || pos.x > 8) {
       throw new Error("intput error x:" + pos.x);
@@ -156,6 +208,13 @@ export class SudokuLogic {
     return this.board[pos.y][pos.x];
   }
 
+  /**
+   * 入力が可能かの判定
+   *
+   * @param {Define.Position2D} pos
+   * @returns {boolean}
+   * @memberof SudokuLogic
+   */
   isAbleSetData(pos: Define.Position2D): boolean {
     if (pos.x < 0 || pos.x > 8) {
       return false;
@@ -166,6 +225,14 @@ export class SudokuLogic {
     return this.originBoard[pos.y][pos.x] === 0;
   }
 
+  /**
+   * 数独の問題に数字を入力
+   *
+   * @param {number} num 値
+   * @param {Define.Position2D} pos 位置
+   * @returns {boolean} 成否
+   * @memberof SudokuLogic
+   */
   setBoardData(num: number, pos: Define.Position2D): boolean {
     if (!this.isAbleSetData(pos)) {
       return false;
@@ -183,6 +250,12 @@ export class SudokuLogic {
     return true;
   }
 
+  /**
+   * 完了判定
+   *
+   * @returns {boolean}
+   * @memberof SudokuLogic
+   */
   isSolved(): boolean {
     if (!this.isAllSettingBoardData()) {
       return false;
